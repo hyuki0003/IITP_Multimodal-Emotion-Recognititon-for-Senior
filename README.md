@@ -18,11 +18,6 @@ The model classifies input data into one of the following 7 emotion categories:
 6. **Sadness** (슬픔)
 7. **Anger** (분노)
 
-## 🏗 Model Architecture
-> Please replace the path below with your actual image file path.
-
-![Model Architecture](./path/to/your/image.png)
-
 ## ⚙️ Dependencies
 This project is built with **Python** and requires the following libraries:
 
