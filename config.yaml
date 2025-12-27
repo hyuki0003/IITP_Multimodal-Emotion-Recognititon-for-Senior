@@ -1,0 +1,271 @@
+IITP-SMED-ORIGIN: # IITP Senior Multimodal Emotion Dataset (SMED) : Origin text embedding + audio feature
+
+  seed: 2024
+
+  # args for modality
+  modality: 'at'
+
+  # args for text
+  text: 'origin'
+
+  # args for relative path
+  data_load_path: '/home/neuroai/Projects/MER-Senior_temp2/Origin_Text.csv'
+  audio_dir: '/home/neuroai/Downloads/IITP_VOICE'
+  structure_save_path: 'save/figures/structure/'
+  feature_save_path: 'save/figures/feature/'
+  model_save_path: 'save/model/'
+  tensor_save_path: 'save/tensor/'
+  log_save_path: 'log/IITP-SMED/'
+
+  # args for metadata
+  n_subjects: 24
+  n_trials: 63
+  n_audio_features: 88
+  n_text_features: 768
+  n_features: 856
+  n_samples: 1512
+  n_folds: 4
+  n_times_draw: 3
+
+  # args for running algorithm
+  k_neighbor: 9
+  timestep: 1
+
+  gcn_hid_channels: 256
+  gcn_out_channels: 128
+  proj_hid_channels: 32
+  out_channels: 7
+
+  learning_rate: 0.005
+  weight_decay: 0.0001
+  cl_coefficient: 0.01 # contrastive loss coefficient
+  epochs: 3000
+
+  ptau: 0.7 # temperature hyperparameter
+
+  # probabilities for augmentation
+  pf1: 0.2
+  pf2: 0.3
+  pe1: 0.2
+  pe2: 0.3
+
+  pt : 0.7 # probability threshold
+
+  patience: 10 # patience for early stopping method
+
+
+IITP-SMED-STT: # IITP Senior Multimodal Emotion Dataset (SMED) : STT text embedding + audio feature
+
+  seed: 2024
+
+  # args for modality
+  modality: 'at'
+  
+  # args for text
+  text: 'stt'
+
+  # args for relative path
+  data_load_path: '/home/neuroai/Projects/MER-Senior_temp2/Origin_Text.csv'
+  audio_dir: '/home/neuroai/Downloads/IITP_VOICE'
+  structure_save_path: 'save/figures/structure/'
+  feature_save_path: 'save/figures/feature/'
+  model_save_path: 'save/model/'
+  tensor_save_path: 'save/tensor/'
+  log_save_path: 'log/IITP-SMED/'
+
+  # args for metadata
+  n_subjects: 24
+  n_trials: 63
+  n_audio_features: 88
+  n_text_features: 768
+  n_features: 856
+  n_samples: 1512
+  n_folds: 4
+  n_times_draw: 3
+
+  # args for running algorithm
+  k_neighbor: 9
+  timestep: 1
+
+  gcn_hid_channels: 256
+  gcn_out_channels: 128
+  proj_hid_channels: 32
+  out_channels: 7
+
+  learning_rate: 0.005
+  weight_decay: 0.0001
+  cl_coefficient: 0.01 # contrastive loss coefficient
+  epochs: 3000
+
+  ptau: 0.7 # temperature hyperparameter
+
+  # probabilities for augmentation
+  pf1: 0.2
+  pf2: 0.3
+  pe1: 0.2
+  pe2: 0.3
+
+  pt : 0.7 # probability threshold
+
+  patience: 10 # patience for early stopping method
+
+IITP-SMED-AUDIO: # IITP Senior Multimodal Emotion Dataset (SMED) : audio feature
+
+  seed: 2024
+
+  # args for modality
+  modality: 'a'
+  
+  # args for relative path
+  data_load_path: '/home/neuroai/Projects/MER-Senior_temp2/Origin_Text.csv'
+  audio_dir: '/home/neuroai/Downloads/IITP_VOICE'
+  structure_save_path: 'save/figures/structure/'
+  feature_save_path: 'save/figures/feature/'
+  model_save_path: 'save/model/'
+  tensor_save_path: 'save/tensor/'
+  log_save_path: 'log/IITP-SMED-ORIGIN/'
+
+  # args for metadata
+  n_subjects: 24
+  n_trials: 63
+  n_audio_features: 88
+  n_features: 88
+  n_samples: 1512
+  n_folds: 4
+  n_times_draw: 1
+
+  # args for running algorithm
+  k_neighbor: 9
+  timestep: 1
+
+  gcn_hid_channels: 88
+  gcn_out_channels: 88
+  proj_hid_channels: 32
+  out_channels: 7
+
+  learning_rate: 0.005
+  weight_decay: 0.0001
+  cl_coefficient: 0.01 # contrastive loss coefficient
+  epochs: 3000
+
+  ptau: 0.7 # temperature hyperparameter
+
+  # probabilities for augmentation
+  pf1: 0.2
+  pf2: 0.3
+  pe1: 0.2
+  pe2: 0.3
+
+  pt: 0.7 # probability threshold
+
+  patience: 10 # patience for early stopping method
+
+IITP-SMED-ORIGIN-TEXT: # IITP Senior Multimodal Emotion Dataset (SMED) : Origin text embedding 
+
+  seed: 2024
+
+  # args for modality
+  modality: 't'
+
+  # args for text
+  text: 'origin'
+  
+  # args for relative path
+  data_load_path: '/home/neuroai/Projects/MER-Senior_temp2/Origin_Text.csv'
+  audio_dir: '/home/neuroai/Downloads/IITP_VOICE'
+  structure_save_path: 'save/figures/structure/'
+  feature_save_path: 'save/figures/feature/'
+  model_save_path: 'save/model/'
+  tensor_save_path: 'save/tensor/'
+  log_save_path: 'log/IITP-SMED-ORIGIN/'
+
+  # args for metadata
+  n_subjects: 24
+  n_trials: 63
+  n_audio_features: 88
+  n_text_features: 768
+  n_features: 768
+  n_samples: 1512
+  n_folds: 4
+  n_times_draw: 1
+
+  # args for running algorithm
+  k_neighbor: 9
+  timestep: 1
+
+  gcn_hid_channels: 256
+  gcn_out_channels: 128
+  proj_hid_channels: 32
+  out_channels: 7
+
+  learning_rate: 0.005
+  weight_decay: 0.0001
+  cl_coefficient: 0.01 # contrastive loss coefficient
+  epochs: 3000
+
+  ptau: 0.7 # temperature hyperparameter
+
+  # probabilities for augmentation
+  pf1: 0.2
+  pf2: 0.3
+  pe1: 0.2
+  pe2: 0.3
+
+  pt: 0.7 # probability threshold
+
+  patience: 10 # patience for early stopping method
+
+IITP-SMED-STT-TEXT: # IITP Senior Multimodal Emotion Dataset (SMED) : STT text embedding
+
+  seed: 2024
+
+  # args for modality
+  modality: 't'
+
+  # args for text
+  text: 'stt'
+  
+  # args for relative path
+  data_load_path: '/home/neuroai/Projects/MER-Senior_temp2/Origin_Text.csv'
+  audio_dir: '/home/neuroai/Downloads/IITP_VOICE'
+  structure_save_path: 'save/figures/structure/'
+  feature_save_path: 'save/figures/feature/'
+  model_save_path: 'save/model/'
+  tensor_save_path: 'save/tensor/'
+  log_save_path: 'log/IITP-SMED-STT/'
+
+  # args for metadata
+  n_subjects: 24
+  n_trials: 63
+  n_audio_features: 88
+  n_text_features: 768
+  n_features: 768
+  n_samples: 1512
+  n_folds: 4
+  n_times_draw: 1
+
+  # args for running algorithm
+  k_neighbor: 9
+  timestep: 1
+
+  gcn_hid_channels: 256
+  gcn_out_channels: 128
+  proj_hid_channels: 32
+  out_channels: 7
+
+  learning_rate: 0.005
+  weight_decay: 0.0001
+  cl_coefficient: 0.01 # contrastive loss coefficient
+  epochs: 3000
+
+  ptau: 0.7 # temperature hyperparameter
+
+  # probabilities for augmentation
+  pf1: 0.2
+  pf2: 0.3
+  pe1: 0.2
+  pe2: 0.3
+
+  pt : 0.7 # probability threshold
+
+  patience: 10 # patience for early stopping method

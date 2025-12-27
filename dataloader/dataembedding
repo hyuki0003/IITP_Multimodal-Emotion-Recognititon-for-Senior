@@ -1,0 +1,172 @@
+import os
+import opensmile
+import torch
+import pandas as pd
+import numpy as np
+from kobert_transformers import get_tokenizer
+from transformers import BertModel
+from tqdm import tqdm
+import speech_recognition as sr
+import subprocess
+import shutil
+
+
+class DataProcessor:
+    def __init__(self, dataset, stt_cache_path, args):
+        self.dataset = dataset
+        self.args = args
+        self.stt_cache_path = stt_cache_path
+
+        # 오디오 모달리티가 켜져 있을 때만 OpenSMILE 초기화
+        if 'a' in self.args.modality:
+            self.smile = opensmile.Smile(
+                feature_set=opensmile.FeatureSet.eGeMAPSv02,
+                feature_level=opensmile.FeatureLevel.Functionals
+            )
+
+        self.audio_features = []
+        self.text_features = []
+
+    def extract_audio_features(self):
+        for idx in tqdm(range(len(self.dataset)), desc="Extracting Audio Features"):
+            # dataloader 반환: path, text, emotion, filename
+            audio_path, _, emotion, _ = self.dataset[idx]
+            filename = os.path.basename(audio_path).split('.')[0]
+
+            # emotion을 확실하게 int로 변환
+            try:
+                emotion = int(emotion)
+            except:
+                pass  # 변환 실패 시 그대로 둠 (나중에 처리)
+
+            try:
+                if os.path.exists(audio_path):
+                    y = self.smile.process_file(audio_path)
+                    feat = y.to_numpy().flatten().tolist()
+                    self.audio_features.append([filename, emotion] + feat)
+                else:
+                    self.audio_features.append([filename, emotion] + [0.0] * 88)
+            except Exception as e:
+                print(f"Error processing {filename}: {e}")
+                self.audio_features.append([filename, emotion] + [0.0] * 88)
+
+    def convert_to_pcm_wav(self, input_file, output_file):
+        try:
+            output_dir = os.path.dirname(output_file)
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+            subprocess.run(
+                ['ffmpeg', '-i', input_file, '-acodec', 'pcm_s16le', '-ar', '16000', '-ac', '1', output_file, '-y'],
+                check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+        except subprocess.CalledProcessError as e:
+            print(f'ffmpeg error ({input_file}): {e.stderr.decode()}')
+
+    def STT(self):
+        r = sr.Recognizer()
+        # recognize_google() : Google Web Speech API
+        # recognize_google_cloud() : Google Cloud Speech API
+        # recognize_bing() : Microsoft Bing Speech API
+        # recognize_houndify() : SoundHound Houndify API
+        # recognize_ibm() : IBM Speech to Text API
+        # recognize_wit() : Wit.ai API
+        # recognize_sphinx() : CMU Sphinx (오프라인에서 동작 가능)
+        output_text = pd.DataFrame(columns=['file', 'text'])
+
+        shutil.rmtree('dataset/converted')
+        # STT를 하기 위해 음성 파일을 PCM WAV 파일로 변환하고 동작해야함
+        # 임시 PCM WAV 파일이 저장될 디렉토리를 비움
+
+        for idx in tqdm(range(len(self.dataset)), desc="STT"):
+            audio_path, _, emotion,_ = self.dataset[idx]
+            filename = os.path.basename(self.dataset[idx][0]).split('.')[0]
+            converted_audio_path = os.path.join('dataset/converted', os.path.basename(self.dataset[idx][0]))
+            self.convert_to_pcm_wav(audio_path, converted_audio_path)
+
+            korean_audio = sr.AudioFile(converted_audio_path)
+            try:
+                with korean_audio as source:
+                    audio = r.record(source)
+                stt_result = r.recognize_google(audio_data=audio, language='ko-KR')
+            except:
+                stt_result = ' '
+
+            df = pd.DataFrame({'file': [filename], 'text': [stt_result]}, index=[idx])
+            output_text = pd.concat([output_text, df])
+            output_text.to_csv(self.stt_cache_path, index=False, encoding='utf-8-sig')
+            print(f"STT results saved to {self.stt_cache_path}")
+        return output_text
+
+    def extract_text_embeddings(self):
+        tokenizer = get_tokenizer()
+        model = BertModel.from_pretrained('skt/kobert-base-v1')
+
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        model.to(device)
+
+        stt_text = None
+        if self.args.text == 'stt':
+            if os.path.exists(self.stt_cache_path):
+                stt_text = pd.read_csv(self.stt_cache_path)
+            else:
+                stt_text = self.STT()
+
+        for idx in tqdm(range(len(self.dataset)), desc="Extracting Text Features"):
+            audio_path, text, emotion, _ = self.dataset[idx]
+            filename = os.path.basename(audio_path).split('.')[0]
+
+            try:
+                emotion = int(emotion)
+            except:
+                pass
+
+            if self.args.text == 'stt' and stt_text is not None:
+                matched = stt_text[stt_text['file'] == filename]
+                text = matched['text'].iloc[0] if not matched.empty else ''
+
+            if pd.isna(text): text = ''
+
+            # 텍스트 인코딩 및 모델 추론
+            inputs = tokenizer([text], padding=True, truncation=True, return_tensors='pt').to(device)
+            with torch.no_grad():
+                outputs = model(**inputs)
+                # pooler_output 사용
+                feat = outputs.pooler_output.cpu().detach().squeeze(0).numpy().tolist()
+
+            self.text_features.append([filename, emotion] + feat)
+
+    def combine_features(self):
+        df_list = []
+
+        if 'a' in self.args.modality and self.audio_features:
+            cols = ["filename", "emotion_label"] + [f"audio_feature{i}" for i in range(1, 89)]
+            audio_df = pd.DataFrame(self.audio_features, columns=cols)
+            df_list.append(audio_df)
+
+        if 't' in self.args.modality and self.text_features:
+            cols = ["filename", "emotion_label"] + [f"text_feature{i}" for i in range(1, 769)]
+            text_df = pd.DataFrame(self.text_features, columns=cols)
+            # 텍스트 DF에서 emotion_label 컬럼은 제거 (병합 시 중복 방지, audio_df 기준 사용)
+            if df_list:
+                text_df = text_df.drop(columns=['emotion_label'])
+            df_list.append(text_df)
+
+        if not df_list:
+            return pd.DataFrame()
+
+        final_df = df_list[0]
+        for df in df_list[1:]:
+            final_df = pd.merge(final_df, df, on='filename')
+
+
+        if 'emotion_label' in final_df.columns:
+            final_df['emotion_label'] = pd.to_numeric(final_df['emotion_label'], errors='coerce').fillna(0).astype(int)
+
+        return final_df
+
+    def process(self):
+        if 'a' in self.args.modality:
+            self.extract_audio_features()
+        if 't' in self.args.modality:
+            self.extract_text_embeddings()
+        return self.combine_features()
