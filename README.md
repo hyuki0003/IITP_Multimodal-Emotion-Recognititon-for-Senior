@@ -35,3 +35,18 @@ This project is built with **Python** and requires the following libraries:
 2. Install the required packages using `pip`:
 ```bash
 pip install -r requirements.txt
+
+
+### Usage
+
+Train and evaluate the model by executing as
+
+python train.py --dataset IITP-SMED --cuda_id 0
+
+Available --dataset arguments must be one of [IITP-SMED, IITP-SMED-STT, AIHUB-SER]
+
+You can choose a single GPU, and cuda_id is the order of available GPU devices.
+
+IITP-SMED and IITP-SMED-STT are our empirical datasets constructed by taking funds from IITP in South Korea.
+
+See details of AIHUB-SER datasets online available link.
