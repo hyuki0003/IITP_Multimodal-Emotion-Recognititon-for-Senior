@@ -44,10 +44,8 @@ Train and evaluate the model by executing as
 python train.py --dataset IITP-SMED --cuda_id 0
 ```
 
-Available --dataset arguments must be one of [IITP-SMED, IITP-SMED-STT]
-
-You can choose a single GPU, and cuda_id is the order of available GPU devices.
+Available datasets should be one of [IITP-SMED, IITP-SMED-STT]
 
 IITP-SMED and IITP-SMED-STT are our empirical datasets constructed by taking funds from IITP in South Korea.
 
-See details of AIHUB-SER datasets online available link.
+Experiment on additional datasets need to be reproduced by owns.
