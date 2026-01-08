@@ -12,9 +12,9 @@ The database consists of **text** and **audio** recordings acquired from scripts
 The model classifies input data into one of the following 7 emotion categories:
 1. **Joy** (기쁨)
 2. **Neutral** (중립)
-3. **Anxiety** (불안)
-4. **Embarrassment** (당황)
-5. **Hurt** (상처)
+3. **Afraid** (불안)
+4. **Surprise** (당황)
+5. **Disgust** (상처)
 6. **Sadness** (슬픔)
 7. **Anger** (분노)
 
