@@ -1,6 +1,6 @@
-# MER based on GCL for Senior
+# Speech-based MER via GCL for Senior
 
-This repository contains the implementation module for **Multimodal Emotion Recognition (MER)** based on **Graph Contrastive Learning (GCL)**.
+This repository contains the implementation module for **Multimodal Emotion Recognition (MER)** utilized on **Graph Contrastive Learning (GCL)**.
 
 ## 📌 Introduction
 The goal of this project is to recognize emotions from multimodal data (Text and Audio). The model utilizes Graph Contrastive Learning to effectively capture the interplay between different modalities within conversational contexts.
