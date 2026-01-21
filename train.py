@@ -116,7 +116,7 @@ def main(args):
 
             log.info("similarity matrix construction Done...")
 
-            # Heatmap 저장 (기존 코드 유지)
+            # Heatmap 저장
             make_route(args.structure_save_path)
 
             ffm = None
@@ -179,7 +179,7 @@ def main(args):
                 args, isdeap=False, verbose=False, earlystop=False
             )
 
-            # 로그 및 결과 저장 (기존 코드 유지)
+            # 로그 및 결과 저장
             if out_trigger == 0:
                 log.info('model id: {}, Epoch : {} - Find best epoch'.format(model_id, best_epoch))
             elif out_trigger == 1:
